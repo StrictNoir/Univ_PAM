@@ -10,11 +10,26 @@ class HomePage extends StatelessWidget {
   List<Product> _items() => [
     Product(
       id: '1',
-      brand: 'H&M',
-      title: 'Short black dress',
+      brand: 'Dorothy Perkins',
+      title: 'Evening Dress',
+      color: 'Pink',
+      price: 12,
+      oldPrice: 15,
+      rating: 5,
+      ratingCount: 10,
+      description: 'Elegant evening dress.',
+      imageMainLeft: 'assets/images/evening_dress.png',
+      imageMainRight: 'assets/images/evening_dress.png',
+      imageCard: 'assets/images/evening_dress.png',
+      salePercent: -20,
+    ),
+    Product(
+      id: '2',
+      brand: 'Sitlly',
+      title: 'Sport dress',
       color: 'Black',
-      price: 19.99,
-      oldPrice: null,
+      price: 19,
+      oldPrice: 22,
       rating: 5,
       ratingCount: 10,
       description:
@@ -22,36 +37,65 @@ class HomePage extends StatelessWidget {
           'frill-trimmed square neckline with concealed elastication. Elasticated seam under the bust '
           'and short puff sleeves with a small frill trim.',
       imageMainLeft: 'assets/images/small_banner.png',
-      imageMainRight: 'assets/images/product_2.png',
-      imageCard: 'assets/images/product_3.png',
-    ),
-    Product(
-      id: '2',
-      brand: 'Dorothy Perkins',
-      title: 'Evening Dress',
-      color: 'Pink',
-      price: 12,
-      oldPrice: 15,
-      rating: 4.5,
-      ratingCount: 24,
-      description: 'Elegant evening dress.',
-      imageMainLeft: 'assets/images/product_4.png',
-      imageMainRight: 'assets/images/product_5.png',
-      imageCard: 'assets/images/product_7.png',
-      salePercent: -20,
+      imageMainRight: 'assets/images/blouse.png',
+      imageCard: 'assets/images/sport_dress.png',
+      salePercent: -15,
     ),
     Product(
       id: '3',
-      brand: 'Mango Boy',
-      title: 'T-Shirt Sailing',
+      brand: 'Dorothy Perkins',
+      title: 'Sport Dress',
+      color: 'White',
+      price: 12,
+      oldPrice: 14,
+      rating: 5,
+      ratingCount: 10,
+      description: 'Casual tee',
+      imageMainLeft: 'assets/images/small_banner.png',
+      imageMainRight: 'assets/images/white_dress.png',
+      imageCard: 'assets/images/white_dress.png',
+      salePercent: -20,
+    ),
+    Product(
+      id: '4',
+      brand: 'OVS',
+      title: 'Blouse',
       color: 'White',
       price: 10,
       rating: 0,
       ratingCount: 0,
-      description: 'Casual tee',
-      imageMainLeft: 'assets/images/small_banner.png',
-      imageMainRight: 'assets/images/product_5.png',
-      imageCard: 'assets/images/product_8.png',
+      description: 'Lightweight blouse with a relaxed fit and soft cotton finish.',
+      imageMainLeft: 'assets/images/evening_dress.png',
+      imageMainRight: 'assets/images/sport_dress.png',
+      imageCard: 'assets/images/blouse.png',
+      isNew: true,
+    ),
+    Product(
+      id: '5',
+      brand: 'Mango Boy',
+      title: 'T-Shirt Sailing',
+      color: 'Red',
+      price: 10,
+      rating: 0,
+      ratingCount: 0,
+      description: 'Soft jersey longsleeve with a flattering v-neckline and tailored fit.',
+      imageMainLeft: 'assets/images/t-shirt_sailing.png',
+      imageMainRight: 'assets/images/t-shirt_sailing.png',
+      imageCard: 'assets/images/t-shirt_sailing.png',
+      isNew: true,
+    ),
+    Product(
+      id: '6',
+      brand: 'Cool ',
+      title: 'Jeans',
+      color: 'Blue',
+      price: 45,
+      rating: 0,
+      ratingCount: 0,
+      description: 'Crew neck tee with a nautical-inspired front print and relaxed fit.',
+      imageMainLeft: 'assets/images/t-shirt_sailing.png',
+      imageMainRight: 'assets/images/t-shirt_sailing.png',
+      imageCard: 'assets/images/t-shirt_sailing.png',
       isNew: true,
     ),
   ];
@@ -60,6 +104,19 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = _items();
     final saleItems = items.where((p) => p.salePercent != null).toList();
+    final nonSaleItems = items.where((p) => p.salePercent == null).toList();
+
+    List<Product> _fillSaleRow() {
+      if (saleItems.length >= 3) {
+        return saleItems.take(3).toList();
+      }
+      final combined = [
+        ...saleItems,
+        ...nonSaleItems,
+      ];
+      return combined.take(3).toList();
+    }
+
     final newItems = items.where((p) => p.isNew).toList();
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
@@ -69,28 +126,26 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: _SmallBanner(
-                  backgroundImage: 'assets/images/product_9.png',
+              const Center(
+              child: _SmallBanner(
                   foregroundImage: 'assets/images/small_banner.png',
                 ),
               ),
-              const SizedBox(height: 40),
-              if (saleItems.isNotEmpty)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _SaleBlock(
-                    title: 'Sale',
-                    subtitle: 'Super summer sale',
-                    actionText: 'See more',
-                    products: saleItems,
-                    onProductTap: (product) =>
-                        _openProduct(context, product, items),
-                  ),
+              const SizedBox(height: 80),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _SaleBlock(
+                  title: 'Sale',
+                  subtitle: 'Super summer sale',
+                  actionText: 'View all',
+                  products: _fillSaleRow(),
+                  onProductTap:
+                      (product) => _openProduct(context, product, items),
                 ),
-              if (saleItems.isNotEmpty && newItems.isNotEmpty)
-                const SizedBox(height: 32),
+              ),
+
+              if (newItems.isNotEmpty) const SizedBox(height: 40),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -123,11 +178,9 @@ class HomePage extends StatelessWidget {
 
 class _SmallBanner extends StatelessWidget {
   const _SmallBanner({
-    required this.backgroundImage,
     required this.foregroundImage,
   });
 
-  final String backgroundImage;
   final String foregroundImage;
 
   @override
@@ -151,16 +204,6 @@ class _SmallBanner extends StatelessWidget {
             right: 0,
             top: 0,
             child: _StatusBar(),
-          ),
-          Positioned(
-            left: -31,
-            top: -282,
-            width: 456,
-            height: 688,
-            child: Image.asset(
-              backgroundImage,
-              fit: BoxFit.cover,
-            ),
           ),
           Positioned(
             left: -5,
@@ -191,31 +234,6 @@ class _SmallBanner extends StatelessWidget {
                   height: 1,
                   letterSpacing: 0,
                   color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 20,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2F80ED),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  '376 × 196',
-                  style: TextStyle(
-                    fontFamily: 'Metropolis',
-                    fontSize: 12,
-                    height: 1,
-                    color: Colors.white,
-                  ),
                 ),
               ),
             ),
@@ -295,67 +313,72 @@ class _SaleBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visible = products.take(_cardOffsets.length).toList();
+    final visible = products.take(3).toList();
     return SizedBox(
       width: 482,
-      height: 331,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          return Stack(
-            clipBehavior: Clip.none,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Positioned(
-                left: width * 0.0427,
-                top: 0,
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: 'Metropolis',
-                    fontSize: 34,
-                    height: 1,
-                    color: Color(0xFF222222),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontFamily: 'Metropolis',
+                        fontSize: 34,
+                        height: 1,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF222222),
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: 16),
+                  Text(
+                    actionText,
+                    style: const TextStyle(
+                      fontFamily: 'Metropolis',
+                      fontSize: 11,
+                      height: 1,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontSize: 11,
+                  height: 1,
+                  color: Color(0xFF9B9B9B),
                 ),
               ),
-              Positioned(
-                left: width * 0.048,
-                top: 331 * 0.1148,
-                child: Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontFamily: 'Metropolis',
-                    fontSize: 11,
-                    height: 1,
-                    color: Color(0xFF9B9B9B),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: width * 0.0373,
-                top: 331 * 0.0574,
-                child: Text(
-                  actionText,
-                  style: const TextStyle(
-                    fontFamily: 'Metropolis',
-                    fontSize: 11,
-                    height: 1,
-                    color: Color(0xFF222222),
-                  ),
-                ),
-              ),
-              for (var i = 0; i < visible.length; i++)
-                Positioned(
-                  left: width * _cardOffsets[i],
-                  top: 331 * _cardTopRatio,
-                  child: ProductCard(
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 266,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < visible.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 16),
+                  ProductCard(
                     product: visible[i],
                     onTap: () => onProductTap(visible[i]),
                   ),
-                ),
-            ],
-          );
-        },
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

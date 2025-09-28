@@ -18,16 +18,23 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double sx(double value) => value * scale;
+    final cardWidth = sx(150);
+    final cardHeight = sx(260);
+    final imageHeight = sx(190);
+    final favoriteSize = sx(36);
+    final favoriteTop = imageHeight - favoriteSize / 2;
+    final contentTop = imageHeight + sx(4);
+
     return SizedBox(
-      width: sx(150),
-      height: sx(260),
+      width: cardWidth,
+      height: cardHeight,
       child: Stack(
         children: [
           Positioned(
             left: sx(1),
             right: sx(1),
             top: 0,
-            height: sx(215),
+            height: imageHeight,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(sx(8)),
               child: Image.asset(product.imageCard, fit: BoxFit.cover),
@@ -54,79 +61,75 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           Positioned(
-            left: sx(113),
-            top: sx(164),
-            width: sx(36),
-            height: sx(36),
-            child: FavoriteButton(size: sx(36), borderRadius: sx(12)),
+            right: sx(1),
+            top: favoriteTop,
+            width: favoriteSize,
+            height: favoriteSize,
+            child: FavoriteButton(size: favoriteSize, borderRadius: sx(12)),
           ),
           Positioned(
             left: sx(4),
-            top: sx(211),
-            child: Text(
-              product.brand,
-              style: TextStyle(
-                fontSize: sx(11),
-                height: 1,
-                color: const Color(0xFF9B9B9B),
-              ),
-            ),
-          ),
-          Positioned(
-            left: sx(4),
-            top: sx(227),
             right: sx(8),
-            child: Text(
-              product.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: sx(16),
-                height: 1,
-                color: const Color(0xFF222222),
-              ),
-            ),
-          ),
-          Positioned(
-            left: sx(4),
-            top: sx(246),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            top: contentTop,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                if (product.oldPrice != null) ...[
-                  _OldPriceTag(value: _money(product.oldPrice!), scale: scale),
-                  SizedBox(width: sx(8)),
-                ],
-                Text(
-                  _money(product.price),
-                  style: TextStyle(
-                    fontSize: sx(14),
-                    height: 20 / 14,
-                    color: product.salePercent != null
-                        ? const Color(0xFFDB3022)
-                        : const Color(0xFF222222),
-                    fontWeight: FontWeight.w600,
+                RatingStars(
+                  value: product.rating,
+                  size: sx(14),
+                  gap: sx(2),
+                  inactiveColor: const Color(0xFF9B9B9B),
+                  color: const Color(0xFFFFBA49),
+                  showCount: product.ratingCount > 0 ? product.ratingCount : null,
+                  countBuilder: (count) => '$count',
+                  countTextStyle: TextStyle(
+                    fontSize: sx(10),
+                    color: const Color(0xFF9B9B9B),
                   ),
                 ),
+                SizedBox(height: sx(4)),
+                Text(
+                  product.brand,
+                  style: TextStyle(
+                    fontSize: sx(11),
+                    height: 1,
+                    color: const Color(0xFF9B9B9B),
+                  ),
+                ),
+                SizedBox(height: sx(2)),
+                Text(
+                  product.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: sx(16),
+                    height: 1,
+                    color: const Color(0xFF222222),
+                  ),
+                ),
+                SizedBox(height: sx(4)),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (product.oldPrice != null) ...[
+                      _OldPriceTag(value: _money(product.oldPrice!), scale: scale),
+                      SizedBox(width: sx(8)),
+                    ],
+                    Text(
+                      _money(product.price),
+                      style: TextStyle(
+                        fontSize: sx(14),
+                        height: 20 / 14,
+                        color: product.salePercent != null
+                            ? const Color(0xFFDB3022)
+                            : const Color(0xFF222222),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            ),
-          ),
-          Positioned(
-            left: sx(0),
-            top: sx(191),
-            width: sx(100),
-            child: RatingStars(
-              value: product.rating,
-              size: sx(14),
-              gap: sx(2),
-              inactiveColor: const Color(0xFF9B9B9B),
-              color: const Color(0xFFFFBA49),
-              showCount: product.ratingCount > 0 ? product.ratingCount : null,
-              countBuilder: (count) => '$count',
-              countTextStyle: TextStyle(
-                fontSize: sx(10),
-                color: const Color(0xFF9B9B9B),
-              ),
             ),
           ),
           Positioned.fill(
@@ -182,27 +185,17 @@ class _OldPriceTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double sx(double v) => v * scale;
-    final thickness = (0.4 * scale).clamp(0.4, double.infinity).toDouble();
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: sx(14),
-            height: 20 / 14,
-            color: const Color(0xFF9B9B9B),
-          ),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          child: Container(
-            height: thickness,
-            color: const Color(0xFF9B9B9B),
-          ),
-        ),
-      ],
+    final thickness = (1.0 * scale).clamp(0.4, double.infinity).toDouble();
+    return Text(
+      value,
+      style: TextStyle(
+        fontSize: sx(14),
+        height: 20 / 14,
+        color: const Color(0xFF9B9B9B),
+        decoration: TextDecoration.lineThrough,
+        decorationColor: const Color(0xFF9B9B9B),
+        decorationThickness: thickness,
+      ),
     );
   }
 }
