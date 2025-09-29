@@ -3,7 +3,6 @@ import '../models/product.dart';
 import '../widgets/favorite_button.dart';
 import '../widgets/rating_stars.dart';
 import '../widgets/size_dropdown.dart';
-import '../widgets/collapsible_panel.dart';
 import '../widgets/product_card.dart';
 
 class ProductDetailPage extends StatelessWidget {
@@ -221,7 +220,7 @@ class ProductDetailPage extends StatelessWidget {
                     left: 0,
                     right: 0,
                     top: py(712),
-                    height: sx(128),
+                    height: sx(112),
                     child: Container(
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -234,12 +233,12 @@ class ProductDetailPage extends StatelessWidget {
                         ],
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(sx(16), sx(20), sx(16), sx(20)),
+                        padding: EdgeInsets.fromLTRB(sx(16), sx(16), sx(16), sx(16)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             SizedBox(
-                              height: sx(48),
+                              height: sx(60),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFDB3022),
@@ -259,12 +258,12 @@ class ProductDetailPage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Spacer(),
+                            SizedBox(height: sx(16)),
                             Align(
                               alignment: Alignment.bottomCenter,
                               child: Container(
-                                width: width * 0.35,
-                                height: sx(6),
+                                width: sx(89),
+                                height: sx(4),
                                 decoration: BoxDecoration(
                                   color: Colors.black,
                                   borderRadius: BorderRadius.circular(100 * scale),
@@ -279,29 +278,18 @@ class ProductDetailPage extends StatelessWidget {
                   Positioned(
                     left: sx(16),
                     right: sx(16),
-                    top: py(856),
+                    top: py(840),
                     child: Column(
                       children: [
                         _InfoCard(title: 'Shipping info', scale: scale),
-                        SizedBox(height: sx(8)),
+                        SizedBox(height: sx(16)),
                         _InfoCard(title: 'Support', scale: scale),
                       ],
                     ),
                   ),
                   Positioned(
-                    left: 0,
-                    right: 0,
-                    top: py(992),
-                    child: CollapsiblePanel(
-                      items: const [
-                        CollapsibleItem('Item details'),
-                      ],
-                      scale: scale,
-                    ),
-                  ),
-                  Positioned(
                     left: sx(16),
-                    top: py(1080),
+                    top: py(984),
                     child: Text(
                       'You can also like this',
                       style: TextStyle(
@@ -314,7 +302,7 @@ class ProductDetailPage extends StatelessWidget {
                   ),
                   Positioned(
                     right: sx(16),
-                    top: py(1085),
+                    top: py(984),
                     child: Text(
                       '${related.length} items',
                       style: TextStyle(
@@ -327,7 +315,7 @@ class ProductDetailPage extends StatelessWidget {
                   Positioned(
                     left: sx(16),
                     right: 0,
-                    top: py(1114),
+                    top: py(1022),
                     height: sx(260),
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
