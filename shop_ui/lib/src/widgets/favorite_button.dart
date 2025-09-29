@@ -1,57 +1,43 @@
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
-
-class FavoriteButton extends StatefulWidget {
+class FavoriteButton extends StatelessWidget {
   const FavoriteButton({
     super.key,
-    this.initialIsFavorite = false,
-    this.onChanged,
+    this.onTap,
     this.size = 36,
+    this.borderRadius,
   });
 
-  final bool initialIsFavorite;
-  final ValueChanged<bool>? onChanged;
+  final VoidCallback? onTap;
   final double size;
-
-  @override
-  State<FavoriteButton> createState() => _FavoriteButtonState();
-}
-
-class _FavoriteButtonState extends State<FavoriteButton> {
-  late bool _isFavorite;
-
-  @override
-  void initState() {
-    super.initState();
-    _isFavorite = widget.initialIsFavorite;
-  }
-
-  void _toggle() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
-    widget.onChanged?.call(_isFavorite);
-  }
+  final double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(widget.size);
-    final icon = _isFavorite ? Icons.favorite : Icons.favorite_border;
-    final iconColor = _isFavorite ? AppColors.primary : AppColors.gray;
-
+    final radius = borderRadius ?? size / 2;
+    final ShapeBorder shape = borderRadius != null
+        ? RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius))
+        : const CircleBorder();
+    final iconSize = size * .36;
     return Material(
       color: Colors.white,
       elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.08),
-      shape: RoundedRectangleBorder(borderRadius: borderRadius),
+      shadowColor: const Color(0x14000000),
+      shape: shape,
       child: InkWell(
-        onTap: _toggle,
-        customBorder: RoundedRectangleBorder(borderRadius: borderRadius),
+        borderRadius: borderRadius != null ? BorderRadius.circular(radius) : null,
+        customBorder: borderRadius != null ? null : const CircleBorder(),
+        onTap: onTap,
         child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: Icon(icon, color: iconColor, size: widget.size * 0.6),
+          width: size,
+          height: size,
+          child: Center(
+            child: Icon(
+              Icons.favorite_border,
+              size: iconSize,
+              color: const Color(0xFF9B9B9B),
+            ),
+          ),
         ),
       ),
     );

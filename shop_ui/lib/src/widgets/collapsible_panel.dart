@@ -1,75 +1,164 @@
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
-
-class CollapsiblePanel extends StatefulWidget {
+class CollapsiblePanel extends StatelessWidget {
   const CollapsiblePanel({
     super.key,
-    required this.title,
-    required this.content,
-    this.initiallyExpanded = false,
+    required this.items,
+    this.scale = 1,
   });
 
-  final String title;
-  final String content;
-  final bool initiallyExpanded;
-
-  @override
-  State<CollapsiblePanel> createState() => _CollapsiblePanelState();
-}
-
-class _CollapsiblePanelState extends State<CollapsiblePanel> {
-  late bool _expanded;
-
-  @override
-  void initState() {
-    super.initState();
-    _expanded = widget.initiallyExpanded;
-  }
-
-  void _toggle() {
-    setState(() {
-      _expanded = !_expanded;
-    });
-  }
+  final List<CollapsibleItem> items;
+  final double scale;
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = Theme.of(context).textTheme.titleLarge;
-    final bodyStyle = Theme.of(context).textTheme.bodyLarge;
-
+    double sx(double value) => value * scale;
+    final defaultCount = items.length <= 2 ? items.length : items.length - 2;
+    final boxedItems = items.length <= 2 ? const <CollapsibleItem>[] : items.sublist(items.length - 2);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        InkWell(
-          onTap: _toggle,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Row(
+        if (defaultCount > 0) ...[
+          _DividerLine(scale: scale),
+          for (int i = 0; i < defaultCount; i++) ...[
+            _FlatTile(item: items[i], scale: scale),
+            _DividerLine(scale: scale),
+          ],
+        ],
+        if (boxedItems.isNotEmpty) ...[
+          if (defaultCount > 0) SizedBox(height: sx(16)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: sx(16)),
+            child: Column(
               children: [
-                Expanded(child: Text(widget.title, style: titleStyle)),
-                AnimatedRotation(
-                  turns: _expanded ? 0.5 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: const Icon(Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.black),
-                ),
+                for (int i = 0; i < boxedItems.length; i++) ...[
+                  _BoxedTile(item: boxedItems[i], scale: scale),
+                  if (i != boxedItems.length - 1) SizedBox(height: sx(8)),
+                ],
               ],
             ),
           ),
-        ),
-        AnimatedCrossFade(
-          firstChild: const SizedBox.shrink(),
-          secondChild: Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Text(widget.content, style: bodyStyle),
-          ),
-          crossFadeState:
-          _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 200),
-        ),
-        const Divider(height: 1, color: AppColors.gray, thickness: 0.4),
+        ],
       ],
+    );
+  }
+}
+
+class _FlatTile extends StatelessWidget {
+  const _FlatTile({required this.item, required this.scale});
+
+  final CollapsibleItem item;
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    double sx(double value) => value * scale;
+    return SizedBox(
+      height: sx(48),
+      child: InkWell(
+        onTap: item.onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: sx(16)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                item.title,
+                style: TextStyle(
+                  fontSize: sx(16),
+                  height: 1,
+                  color: const Color(0xFF222222),
+                ),
+              ),
+              Transform.rotate(
+                angle: -1.5708,
+                child: Icon(
+                  Icons.keyboard_arrow_down,
+                  size: sx(16),
+                  color: const Color(0xFF222222),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BoxedTile extends StatelessWidget {
+  const _BoxedTile({required this.item, required this.scale});
+
+  final CollapsibleItem item;
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    double sx(double value) => value * scale;
+    final borderRadius = BorderRadius.circular(sx(8));
+    return Material(
+      color: Colors.white,
+      elevation: 0,
+      borderRadius: borderRadius,
+      child: InkWell(
+        onTap: item.onTap,
+        borderRadius: borderRadius,
+        child: Container(
+          height: sx(56),
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            border: Border.all(
+              color: const Color(0x1A000000),
+              width: sx(1),
+            ),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: sx(16)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                item.title,
+                style: TextStyle(
+                  fontSize: sx(16),
+                  height: 1,
+                  color: const Color(0xFF222222),
+                ),
+              ),
+              Transform.rotate(
+                angle: -1.5708,
+                child: Icon(
+                  Icons.keyboard_arrow_down,
+                  size: sx(16),
+                  color: const Color(0xFF222222),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CollapsibleItem {
+  final String title;
+  final VoidCallback? onTap;
+  const CollapsibleItem(this.title, {this.onTap});
+}
+
+class _DividerLine extends StatelessWidget {
+  const _DividerLine({this.scale = 1});
+
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: .25,
+      child: Divider(
+        color: const Color(0xFF9B9B9B),
+        thickness: .4 * scale,
+        height: 0,
+      ),
     );
   }
 }
