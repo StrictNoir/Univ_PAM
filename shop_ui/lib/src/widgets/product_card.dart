@@ -82,7 +82,7 @@ class ProductCard extends StatelessWidget {
                   inactiveColor: const Color(0xFF9B9B9B),
                   color: const Color(0xFFFFBA49),
                   showCount: product.ratingCount > 0 ? product.ratingCount : null,
-                  countBuilder: (count) => '$count',
+                  countBuilder: (count) => '($count)',
                   countTextStyle: TextStyle(
                     fontSize: sx(10),
                     color: const Color(0xFF9B9B9B),
