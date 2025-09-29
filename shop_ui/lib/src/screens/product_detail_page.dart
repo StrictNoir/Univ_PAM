@@ -148,7 +148,7 @@ class ProductDetailPage extends StatelessWidget {
                     top: py(515),
                     width: sx(36),
                     height: sx(36),
-                    child: FavoriteButton(size: sx(36), borderRadius: sx(12)),
+                    child: FavoriteButton(size: sx(36)),
                   ),
                   Positioned(
                     left: sx(16),
@@ -220,8 +220,8 @@ class ProductDetailPage extends StatelessWidget {
                   Positioned(
                     left: 0,
                     right: 0,
-                    top: py(700),
-                    height: sx(112),
+                    top: py(712),
+                    height: sx(128),
                     child: Container(
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -233,64 +233,75 @@ class ProductDetailPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: width * 0.3227,
-                            right: width * 0.32,
-                            top: sx(66),
-                            height: sx(8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(100 * scale),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: sx(16),
-                            right: sx(16),
-                            top: sx(20),
-                            height: sx(48),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFDB3022),
-                                elevation: 6,
-                                shadowColor: const Color(0x40D32626),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(sx(25)),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(sx(16), sx(20), sx(16), sx(20)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(
+                              height: sx(48),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFDB3022),
+                                  elevation: 6,
+                                  shadowColor: const Color(0x40D32626),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(sx(25)),
+                                  ),
                                 ),
-                              ),
-                              onPressed: () {},
-                              child: Text(
-                                'ADD TO CART',
-                                style: TextStyle(
-                                  fontSize: sx(14),
-                                  color: Colors.white,
+                                onPressed: () {},
+                                child: Text(
+                                  'ADD TO CART',
+                                  style: TextStyle(
+                                    fontSize: sx(14),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            const Spacer(),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                width: width * 0.35,
+                                height: sx(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(100 * scale),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
+                  ),
+                  Positioned(
+                    left: sx(16),
+                    right: sx(16),
+                    top: py(856),
+                    child: Column(
+                      children: [
+                        _InfoCard(title: 'Shipping info', scale: scale),
+                        SizedBox(height: sx(8)),
+                        _InfoCard(title: 'Support', scale: scale),
+                      ],
                     ),
                   ),
                   Positioned(
                     left: 0,
                     right: 0,
-                    top: py(778),
+                    top: py(992),
                     child: CollapsiblePanel(
                       items: const [
                         CollapsibleItem('Item details'),
-                        CollapsibleItem('Shipping info'),
-                        CollapsibleItem('Support'),
                       ],
                       scale: scale,
                     ),
                   ),
                   Positioned(
                     left: sx(16),
-                    top: py(946),
+                    top: py(1080),
                     child: Text(
                       'You can also like this',
                       style: TextStyle(
@@ -303,7 +314,7 @@ class ProductDetailPage extends StatelessWidget {
                   ),
                   Positioned(
                     right: sx(16),
-                    top: py(951),
+                    top: py(1085),
                     child: Text(
                       '${related.length} items',
                       style: TextStyle(
@@ -316,7 +327,7 @@ class ProductDetailPage extends StatelessWidget {
                   Positioned(
                     left: sx(16),
                     right: 0,
-                    top: py(980),
+                    top: py(1114),
                     height: sx(260),
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
@@ -337,6 +348,61 @@ class ProductDetailPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _InfoCard extends StatelessWidget {
+  const _InfoCard({required this.title, required this.scale, this.onTap});
+
+  final String title;
+  final double scale;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    double sx(double value) => value * scale;
+    final borderRadius = BorderRadius.circular(sx(8));
+    return Material(
+      color: Colors.white,
+      elevation: 0,
+      borderRadius: borderRadius,
+      child: InkWell(
+        borderRadius: borderRadius,
+        onTap: onTap,
+        child: Container(
+          height: sx(56),
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            border: Border.all(
+              color: const Color(0x1A000000),
+              width: sx(1),
+            ),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: sx(16)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: sx(16),
+                  height: 1,
+                  color: const Color(0xFF222222),
+                ),
+              ),
+              Transform.rotate(
+                angle: -1.5708,
+                child: Icon(
+                  Icons.keyboard_arrow_down,
+                  size: sx(16),
+                  color: const Color(0xFF222222),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

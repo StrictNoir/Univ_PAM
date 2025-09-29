@@ -14,15 +14,19 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = borderRadius ?? size / 2.25;
+    final radius = borderRadius ?? size / 2;
+    final ShapeBorder shape = borderRadius != null
+        ? RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius))
+        : const CircleBorder();
     final iconSize = size * .36;
     return Material(
       color: Colors.white,
       elevation: 4,
       shadowColor: const Color(0x14000000),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+      shape: shape,
       child: InkWell(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: borderRadius != null ? BorderRadius.circular(radius) : null,
+        customBorder: borderRadius != null ? null : const CircleBorder(),
         onTap: onTap,
         child: SizedBox(
           width: size,

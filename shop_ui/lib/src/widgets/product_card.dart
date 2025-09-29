@@ -65,7 +65,7 @@ class ProductCard extends StatelessWidget {
             top: favoriteTop,
             width: favoriteSize,
             height: favoriteSize,
-            child: FavoriteButton(size: favoriteSize, borderRadius: sx(12)),
+            child: FavoriteButton(size: favoriteSize),
           ),
           Positioned(
             left: sx(4),
