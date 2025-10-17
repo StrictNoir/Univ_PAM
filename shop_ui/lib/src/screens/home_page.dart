@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/product_cubit.dart';
 import '../models/product.dart';
 import 'product_detail_page.dart';
 import '../widgets/product_card.dart';
@@ -6,160 +9,34 @@ import '../widgets/product_card.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Demo data using your assets
-  List<Product> _items() => [
-    Product(
-      id: '1',
-      brand: 'Dorothy Perkins',
-      title: 'Evening Dress',
-      color: 'Pink',
-      price: 12,
-      oldPrice: 15,
-      rating: 5,
-      ratingCount: 10,
-      description: 'Elegant evening dress.',
-      imageMainLeft: 'assets/images/evening_dress.png',
-      imageMainRight: 'assets/images/evening_dress.png',
-      imageCard: 'assets/images/evening_dress.png',
-      salePercent: -20,
-    ),
-    Product(
-      id: '2',
-      brand: 'Sitlly',
-      title: 'Sport dress',
-      color: 'Black',
-      price: 19,
-      oldPrice: 22,
-      rating: 5,
-      ratingCount: 10,
-      description:
-      'Short dress in soft cotton jersey with decorative buttons down the front and a wide, '
-          'frill-trimmed square neckline with concealed elastication. Elasticated seam under the bust '
-          'and short puff sleeves with a small frill trim.',
-      imageMainLeft: 'assets/images/small_banner.png',
-      imageMainRight: 'assets/images/blouse.png',
-      imageCard: 'assets/images/sport_dress.png',
-      salePercent: -15,
-    ),
-    Product(
-      id: '3',
-      brand: 'Dorothy Perkins',
-      title: 'Sport Dress',
-      color: 'White',
-      price: 12,
-      oldPrice: 14,
-      rating: 5,
-      ratingCount: 10,
-      description: 'Casual tee',
-      imageMainLeft: 'assets/images/small_banner.png',
-      imageMainRight: 'assets/images/white_dress.png',
-      imageCard: 'assets/images/white_dress.png',
-      salePercent: -20,
-    ),
-    Product(
-      id: '4',
-      brand: 'OVS',
-      title: 'Blouse',
-      color: 'White',
-      price: 10,
-      rating: 0,
-      ratingCount: 0,
-      description: 'Lightweight blouse with a relaxed fit and soft cotton finish.',
-      imageMainLeft: 'assets/images/evening_dress.png',
-      imageMainRight: 'assets/images/sport_dress.png',
-      imageCard: 'assets/images/blouse.png',
-      isNew: true,
-    ),
-    Product(
-      id: '5',
-      brand: 'Mango Boy',
-      title: 'T-Shirt Sailing',
-      color: 'Red',
-      price: 10,
-      rating: 0,
-      ratingCount: 0,
-      description: 'Soft jersey longsleeve with a flattering v-neckline and tailored fit.',
-      imageMainLeft: 'assets/images/t-shirt_sailing.png',
-      imageMainRight: 'assets/images/t-shirt_sailing.png',
-      imageCard: 'assets/images/t-shirt_sailing.png',
-      isNew: true,
-    ),
-    Product(
-      id: '6',
-      brand: 'Cool ',
-      title: 'Jeans',
-      color: 'Blue',
-      price: 45,
-      rating: 0,
-      ratingCount: 0,
-      description: 'Crew neck tee with a nautical-inspired front print and relaxed fit.',
-      imageMainLeft: 'assets/images/t-shirt_sailing.png',
-      imageMainRight: 'assets/images/t-shirt_sailing.png',
-      imageCard: 'assets/images/t-shirt_sailing.png',
-      isNew: true,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final items = _items();
-    final saleItems = items.where((p) => p.salePercent != null).toList();
-    final nonSaleItems = items.where((p) => p.salePercent == null).toList();
-
-    List<Product> _fillSaleRow() {
-      if (saleItems.length >= 3) {
-        return saleItems.take(3).toList();
-      }
-      final combined = [
-        ...saleItems,
-        ...nonSaleItems,
-      ];
-      return combined.take(3).toList();
-    }
-
-    final newItems = items.where((p) => p.isNew).toList();
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Center(
-              child: _SmallBanner(
-                  foregroundImage: 'assets/images/small_banner.png',
-                ),
-              ),
-              const SizedBox(height: 80),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _SaleBlock(
-                  title: 'Sale',
-                  subtitle: 'Super summer sale',
-                  actionText: 'View all',
-                  products: _fillSaleRow(),
-                  onProductTap:
-                      (product) => _openProduct(context, product, items),
-                ),
-              ),
-
-              if (newItems.isNotEmpty) const SizedBox(height: 40),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _SaleBlock(
-                  title: 'New',
-                  subtitle: "You've never seen it before!",
-                  actionText: 'View all',
-                  products: newItems.isNotEmpty ? newItems : items,
+        child: BlocBuilder<ProductCubit, ProductState>(
+          builder: (context, state) {
+            switch (state.status) {
+              case ProductStatus.initial:
+              case ProductStatus.loading:
+                return const Center(child: CircularProgressIndicator());
+              case ProductStatus.failure:
+                return _ErrorView(
+                  message: state.errorMessage ?? 'Failed to load products.',
+                  onRetry: () => context.read<ProductCubit>().loadProducts(),
+                );
+              case ProductStatus.success:
+                final items = state.products;
+                if (items.isEmpty) {
+                  return const _EmptyView();
+                }
+                return _LoadedView(
+                  items: items,
                   onProductTap: (product) =>
                       _openProduct(context, product, items),
-                ),
-              ),
-            ],
-          ),
+                );
+            }
+          },
         ),
       ),
     );
@@ -171,6 +48,117 @@ class HomePage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) => ProductDetailPage(product: product, related: related),
+      ),
+    );
+  }
+}
+
+class _LoadedView extends StatelessWidget {
+  const _LoadedView({
+    required this.items,
+    required this.onProductTap,
+  });
+
+  final List<Product> items;
+  final ValueChanged<Product> onProductTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final saleItems = items.where((p) => p.salePercent != null).toList();
+    final nonSaleItems = items.where((p) => p.salePercent == null).toList();
+    final newItems = items.where((p) => p.isNew).toList();
+
+    List<Product> fillSaleRow() {
+      if (saleItems.length >= 3) {
+        return saleItems.take(3).toList();
+      }
+      final combined = [
+        ...saleItems,
+        ...nonSaleItems,
+      ];
+      return combined.take(3).toList();
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Center(
+            child: _SmallBanner(
+              foregroundImage: 'assets/images/small_banner.png',
+            ),
+          ),
+          const SizedBox(height: 80),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SaleBlock(
+              title: 'Sale',
+              subtitle: 'Super summer sale',
+              actionText: 'View all',
+              products: fillSaleRow(),
+              onProductTap: onProductTap,
+            ),
+          ),
+          if (newItems.isNotEmpty) const SizedBox(height: 40),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _SaleBlock(
+              title: 'New',
+              subtitle: "You've never seen it before!",
+              actionText: 'View all',
+              products: newItems.isNotEmpty ? newItems : items,
+              onProductTap: onProductTap,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({
+    required this.message,
+    required this.onRetry,
+  });
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            message,
+            style: const TextStyle(fontSize: 16, color: Color(0xFF222222)),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: onRetry,
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyView extends StatelessWidget {
+  const _EmptyView();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text(
+        'No products available right now.',
+        style: TextStyle(fontSize: 16, color: Color(0xFF222222)),
       ),
     );
   }
@@ -307,9 +295,6 @@ class _SaleBlock extends StatelessWidget {
   final String actionText;
   final List<Product> products;
   final ValueChanged<Product> onProductTap;
-
-  static const _cardOffsets = [0.0332, 0.3776, 0.7212];
-  static const _cardTopRatio = 0.2145;
 
   @override
   Widget build(BuildContext context) {
