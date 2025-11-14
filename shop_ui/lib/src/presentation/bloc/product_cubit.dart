@@ -1,29 +1,29 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../models/product.dart';
-import '../repositories/product_repository.dart';
+import '../../domain/entities/feed.dart';
+import '../../domain/repositories/product_repository.dart';
 
 enum ProductStatus { initial, loading, success, failure }
 
 class ProductState {
   const ProductState({
     this.status = ProductStatus.initial,
-    this.products = const <Product>[],
+    this.feed,
     this.errorMessage,
   });
 
   final ProductStatus status;
-  final List<Product> products;
+  final FeedData? feed;
   final String? errorMessage;
 
   ProductState copyWith({
     ProductStatus? status,
-    List<Product>? products,
+    FeedData? feed,
     String? errorMessage,
   }) {
     return ProductState(
       status: status ?? this.status,
-      products: products ?? this.products,
+      feed: feed ?? this.feed,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
@@ -37,11 +37,11 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> loadProducts() async {
     emit(state.copyWith(status: ProductStatus.loading));
     try {
-      final products = await _repository.fetchProducts();
+      final feed = await _repository.getFeed();
       emit(
         state.copyWith(
           status: ProductStatus.success,
-          products: products,
+          feed: feed,
           errorMessage: null,
         ),
       );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/product.dart';
+import '../../domain/entities/product.dart';
 import 'favorite_button.dart';
 import 'rating_stars.dart';
 
@@ -37,7 +37,13 @@ class ProductCard extends StatelessWidget {
             height: imageHeight,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(sx(8)),
-              child: Image.asset(product.imageCard, fit: BoxFit.cover),
+              child: Image.network(
+                product.image,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: const Color(0xFFE0E0E0),
+                ),
+              ),
             ),
           ),
           if (product.salePercent != null)
@@ -143,7 +149,10 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  String _money(double v) => '${v.toStringAsFixed(v.truncateToDouble() == v ? 0 : 2)}\$';
+  String _money(double v) {
+    final decimals = v.truncateToDouble() == v ? 0 : 2;
+    return '\$' + v.toStringAsFixed(decimals);
+  }
 }
 
 class _Pill extends StatelessWidget {

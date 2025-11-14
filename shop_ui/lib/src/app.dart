@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/product_cubit.dart';
-import 'repositories/product_repository.dart';
-import 'theme.dart';
-import 'screens/home_page.dart';
+import 'data/datasources/product_remote_data_source.dart';
+import 'data/repositories/product_repository.dart';
+import 'domain/repositories/product_repository.dart';
+import 'presentation/bloc/product_cubit.dart';
+import 'presentation/theme.dart';
+import 'presentation/screens/home_page.dart';
 
 class ShopApp extends StatelessWidget {
   const ShopApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (_) => ProductRepository(),
+    final repository = ProductRepositoryImpl(
+      remoteDataSource: ProductRemoteDataSource(),
+    );
+
+    return RepositoryProvider<ProductRepository>.value(
+      value: repository,
       child: BlocProvider(
-        create: (context) =>
-            ProductCubit(context.read<ProductRepository>())..loadProducts(),
+        create: (context) => ProductCubit(context.read<ProductRepository>())..loadProducts(),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Shop UI',
